@@ -23,29 +23,26 @@
 
 P: L
     {
-	$$ = CreateNode("P", $1, NULL);
+	$$ = CreateNode("P -> L", $1, NULL);
 	root = $$;
     }
    |L P
     { 
-  	$$ = CreateNode("P", $1, $2);
+  	$$ = CreateNode("P -> LP", $1, $2);
 	root = $$;
     };
 
 
 L: S SEM
     {
-	$2 = CreateNode("SEM", NULL, NULL);
-	$1 = CreateNode("S", NULL, $2);
-	$$ = CreateNode("L", $1, NULL);	 
+	$1 -> rbrother = $2;
+	$$ = CreateNode("L -> S;", $1, NULL);	 
     };
 
 
 S: ID ASSIGN E
     {
-	$2 = CreateNode("ASSIGN", NULL, $3);
-	$1 = CreateNode("ID", NULL, $2);
-	$$ = CreateNode("S", $1, NULL);
+	$$ = CreateNode("S -> ID = E", $1, NULL);
     }
     | IF C THEN S
     {
