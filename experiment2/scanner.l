@@ -3,7 +3,7 @@
 #include<string.h>
 #include<stdio.h>
 #include<stdlib.h>
-
+#include <math.h>
 #include "parser.tab.h"
 %}
 
@@ -63,9 +63,9 @@ ID ([a-zA-Z][a-zA-Z0-9]*?[_.][a-zA-Z0-9][a-zA-Z0-9]*?)|([a-zA-Z][a-zA-Z0-9]*?)
 
 
 
-{ID}     {yyval.n = strdup(yytex); return ID;}
+{ID}     {yylval.n = strdup(yytext); return ID;}
 
-{INT10}  {yylval.d = atoi(yytex); return INT10;}
+{INT10}  {yylval.d = atoi(yytext); return INT10;}
 
 {REAL10} {yylval.f = atof(yytext); return REAL10; }
 
