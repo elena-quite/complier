@@ -9,7 +9,7 @@ struct AstNode{
 	struct AstNode *r;
 	struct AstNode *c;
 
-	int t;
+	int tempindex;
 	int index;
 	char relop;
 	int type;

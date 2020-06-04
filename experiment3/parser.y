@@ -1,5 +1,5 @@
-%{
-
+%{	
+	#define 3AC codestr[nextindex]+strlen(codestr[nextindex])
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
@@ -10,6 +10,14 @@
 	int yylex();
 	void yyerror(char *s);
 	struct AstNode* root;
+
+	//the num of temp
+	int count;
+	//store the 3AC
+	char *codestr[100];
+	//
+	int start = 100;
+	int nextindex = 0;
 %}
 
 %union {
@@ -27,7 +35,12 @@
 %token GT LT ASSIGN
 %token LPAREN RPAREN LBRACE RBRACE SEM COMMA
 
+%left GT LT
+%left ADD SUB
+%left MUL DIV
+
 %type <a> P L S C E T F
+
 
 %%
 
@@ -87,3 +100,38 @@ void yyerror(char *s)
 
 }
 
+//create temporary variable
+struct AstNode* newtemp(struct AstNode* node){
+	count++;
+	node->tempcount = count;
+	node->type = 3;
+	return node;
+}
+
+//create the name of tempporary variable
+void newplace(struct AstNode *node){
+	switch(node->type){
+		case 1:
+			sprintf(3AC, "%s", node->Id);
+			break;
+		case 2:
+			sprintf(3AC, "%s", node->num);
+			break;
+		case 3:
+			sprintf(3AC, "%s", node->tempindex);
+			break;
+	}
+}
+
+
+
+
+//
+void PrintCode(FILE* f)
+{
+	fprintf(f,"\n");
+	int i = 0;
+	for(i = 0; i < nextindex; i++){
+		fprintf(f,"%s\n", codestr[i]);
+	}
+}
