@@ -51,7 +51,7 @@ P: L     				{$$ = CreateNode("P->L",  $1, NULL); root = $$;}
 L: S SEM				{$$ = CreateNode("L->S;", $1, NULL);};
 
 
-S: ID ASSIGN E			{$$ = CreateId("S->ID=E",$1, $3);}
+S: ID ASSIGN E			{$$ = CreateId("S->ID=E",$1, $3); genrelop($$, $3, NULL,'=');}
    | IF C THEN S		{$$ = CreateNode("S->IF C THEN S", $2, $4);}
    | IF C THEN S ELSE S	{$$ = CreateifNode("S->IF C THEN S ELSE S", $2, $4, $6);}
    | WHILE C DO S		{$$ = CreateNode("S->WHILE C DO S",$2, $4);};
@@ -60,13 +60,13 @@ C: E GT E				{$$ = CreateNode("C->E > E", $1, $3);}
    | E LT E				{$$ = CreateNode("C->E < E", $1, $3);}
    | E ASSIGN E			{$$ = CreateNode("C->E = E", $1, $3);};
 
-E: E ADD T				{$$ = CreateNode("E->E+T", $1, $3);} 
-   | E SUB T			{$$ = CreateNode("E->E-T", $1, $3);}
+E: E ADD T				{$$ = CreateNode("E->E+T", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2, '+');} 
+   | E SUB T			{$$ = CreateNode("E->E-T", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');}
    | T					{$$ = CreateNode("E->T",$1, NULL);};
 
 T: F					{$$ = CreateNode("T->F", $1, NULL);}
-   | T MUL F			{$$ = CreateNode("T->T * F", $1, $3);}
-   | T DIV F			{$$ = CreateNode("T->T/F",   $1, $3);};
+   | T MUL F			{$$ = CreateNode("T->T * F", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');}
+   | T DIV F			{$$ = CreateNode("T->T/F",   $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');};
 
 F: LPAREN E RPAREN		{$$ = CreateNode("F->(E)",$2, NULL);}
    | ID					{$$ = CreateNodeId("F->ID",     $1);}
@@ -78,7 +78,8 @@ F: LPAREN E RPAREN		{$$ = CreateNode("F->(E)",$2, NULL);}
    | REAL16				{$$ = CreateReal("F->REAL16", $1);};
 %%
 
-int main(int argc, const char *args[]){
+int main(int argc, const char *args[])
+{
 	extern FILE *yyin;
 
 	if(argc > 1 && (yyin = fopen(args[1], "r")) == NULL) {
@@ -101,7 +102,8 @@ void yyerror(char *s)
 }
 
 //create temporary variable
-struct AstNode* newtemp(struct AstNode* node){
+struct AstNode* newtemp(struct AstNode* node)
+{
 	count++;
 	node->tempcount = count;
 	node->type = 3;
@@ -109,7 +111,8 @@ struct AstNode* newtemp(struct AstNode* node){
 }
 
 //create the name of tempporary variable
-void newplace(struct AstNode *node){
+void newplace(struct AstNode *node)
+{
 	switch(node->type){
 		case 1:
 			sprintf(3AC, "%s", node->Id);
@@ -123,8 +126,16 @@ void newplace(struct AstNode *node){
 	}
 }
 
-
-
+void genrelop(struct AstNode* result, struct AstNode* arg1, struct AstNode* arg2, char op)
+{
+	if(op == "="){
+		newplace(arg1);
+	else{
+		newplace(arg1);
+		sprintf(3AC, "%c", op);
+		newplace(arg2);
+	}		
+}
 
 //
 void PrintCode(FILE* f)
