@@ -1,4 +1,4 @@
-#include<backpatch.h>
+#include "backpatch.h"
 struct AstNode{
 	
 	char name[50];
@@ -24,7 +24,7 @@ struct AstNode{
 struct AstNode* CreateNode(char* name, struct AstNode* l, struct AstNode* r) {
 	struct AstNode *Node = (struct AstNode*)malloc(sizeof(struct AstNode));
 	strcpy(Node->name, name);
-    Node->num = -1;
+    	Node->num = -1;
 	Node->f = -1;
 	Node->l = l;
 	Node->r = r;
@@ -93,9 +93,10 @@ void PrintFormula(struct AstNode* node, FILE* f) {
 	   fprintf(f,"\n");
 	   PrintFormula(node->l,f);
 	   PrintFormula(node->c,f);
-       PrintFormula(node->r,f);
+       	   PrintFormula(node->r,f);
 	  
 	}
 }
 
+ 
 

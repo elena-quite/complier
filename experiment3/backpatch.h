@@ -8,20 +8,20 @@ struct ListNode
 	int index;
 };
 
-struct ListNode* CreateNode(int index)
+struct ListNode* CNode(int index)
 {
 	struct ListNode* node = (struct ListNode*)malloc(sizeof(struct ListNode));
 	node->index = index;
 	return node;
 }
 
-void CreateList(struct ListNode* &list, int index)
+void CreateList(struct ListNode* list, int index)
 {
 	struct ListNode* node;
 	struct ListNode* pre;
 	if(list == NULL)
 	{
-		node = CreateNode(index);
+		node = CNode(index);
 		list->head = node;
 	}
 	else
@@ -30,7 +30,7 @@ void CreateList(struct ListNode* &list, int index)
 			pre = list;
 			list = list->next;
 		}
-		pre->next = CreateNode(index);
+		pre->next = CNode(index);
 	}
 
 }
