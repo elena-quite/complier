@@ -42,24 +42,24 @@ P: L     				{$$ = CreateNode("P->L",  $1, NULL); root = $$; place_twonode(&$$, 
 
 L: S SEM				{$$ = CreateNode("L->S;", $1, NULL); place_twonode(&$$, $1->place);};
 
-S: ID ASSIGN E			{$$ = CreateId("S->ID=E",$1, $3); gen_idnode($$3, $$1);}
-   | IF C THEN S		{$$ = CreateNode("S->IF C THEN S", $2, $4);}
-   | IF C THEN S ELSE S	{$$ = CreateifNode("S->IF C THEN S ELSE S", $2, $4, $6);}
-   | WHILE C DO S		{$$ = CreateNode("S->WHILE C DO S",$2, $4);};
+S: ID ASSIGN E				{$$ = CreateId("S->ID=E",$1, $3); gen_idnode($$3, $$1);}
+   | IF C THEN S			{$$ = CreateNode("S->IF C THEN S", $2, $4); }
+   | IF C THEN S ELSE S			{$$ = CreateifNode("S->IF C THEN S ELSE S", $2, $4, $6);}
+   | WHILE C DO S			{$$ = CreateNode("S->WHILE C DO S",$2, $4);};
 
-C: E GT E				{$$ = CreateNode("C->E > E", $1, $3); gen_comptrue($1,">", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);}
-   | E LT E				{$$ = CreateNode("C->E < E", $1, $3); gen_comptrue($1,"<", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);}
-   | E ASSIGN E			{$$ = CreateNode("C->E = E", $1, $3); gen_comptrue($1,"=", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);};
+C: E GT E				{$$ = CreateNode("C->E > E", $1, $3); gen_comptrue($1,">", $2); CreateList(&$$.truelist,cindex); gen_compfalse();  CreateList(&$$.falselist,cindex);}
+   | E LT E				{$$ = CreateNode("C->E < E", $1, $3); gen_comptrue($1,"<", $2); CreateList(&$$.truelist,cindex); gen_compfalse();  CreateList(&$$.falselist,cindex);}
+   | E ASSIGN E				{$$ = CreateNode("C->E = E", $1, $3); gen_comptrue($1,"=", $2); CreateList(&$$.truelist,cindex); gen_compfalse(); CreateList(&$$.falselist,cindex);};
 
 E: E ADD T				{$$ = CreateNode("E->E+T", $1, $3); newtemp($$); gen($$, $1, '+', $3);} 
-   | E SUB T			{$$ = CreateNode("E->E-T", $1, $3); newtemp($$); gen($$, $1, '-', $3);}
+   | E SUB T				{$$ = CreateNode("E->E-T", $1, $3); newtemp($$); gen($$, $1, '-', $3);}
    | T					{$$ = CreateNode("E->T", $1, NULL); place_twonode(&$$, $1->place);};
 
 T: F					{$$ = CreateNode("T->F", $1, NULL);   place_twonode(&$$, $1->place);}
-   | T MUL F			{$$ = CreateNode("T->T * F", $1, $3); newtemp($$); gen($$, $1, '*', $3);}
-   | T DIV F			{$$ = CreateNode("T->T/F",   $1, $3); newtemp($$); gen($$, $1, '/', $3);};
+   | T MUL F				{$$ = CreateNode("T->T * F", $1, $3); newtemp($$); gen($$, $1, '*', $3);}
+   | T DIV F				{$$ = CreateNode("T->T/F",   $1, $3); newtemp($$); gen($$, $1, '/', $3);};
 
-F: LPAREN E RPAREN		{$$ = CreateNode("F->(E)",$2, NULL); place_twonode(&$$, $1->place);}
+F: LPAREN E RPAREN			{$$ = CreateNode("F->(E)",$2, NULL); place_twonode(&$$, $1->place);}
    | ID					{$$ = CreateNodeId("F->ID",     $1); placenum(&$$, $1->Id, 2);}
    | INT8				{$$ = CreateNodeNum("F->INT8",  $1); placenum(&$$, $1->num, 1);}
    | INT10				{$$ = CreateNodeNum("F->INT10", $1); placenum(&$$, $1->num, 1);}

@@ -4,34 +4,33 @@
 struct ListNode
 {	
 	struct ListNode *next;
+	struct ListNode *head;
 	int index;
 };
 
 struct ListNode* CreateNode(int index)
 {
-	struct ListNode* node = (struct LiastNode*)malloc(sizeof(struct ListNode));
+	struct ListNode* node = (struct ListNode*)malloc(sizeof(struct ListNode));
 	node->index = index;
 	return node;
 }
 
-struct ListNode* CreateList(struct ListNode* list, int index)
+void CreateList(struct ListNode* &list, int index)
 {
-	struct ListNode* temp;
 	struct ListNode* node;
 	struct ListNode* pre;
-	if(temp == NULL)
+	if(list == NULL)
 	{
 		node = CreateNode(index);
+		list->head = node;
 	}
 	else
 	{
-		while(temp != NULL){
-			pre = temp;
-			temp = temp->next;
+		while(list != NULL){
+			pre = list;
+			list = list->next;
 		}
-		temp = CreateNode(index);
-		pre->next = temp;
-		node = temp;
+		pre->next = CreateNode(index);
 	}
-	return node;
+
 }
