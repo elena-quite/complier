@@ -1,5 +1,5 @@
-%{	
-	#define 3AC codestr[nextindex]+strlen(codestr[nextindex])
+%{
+
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
@@ -11,13 +11,10 @@
 	void yyerror(char *s);
 	struct AstNode* root;
 
-	//the num of temp
-	int count;
-	//store the 3AC
-	char *codestr[100];
-	//
-	int start = 100;
-	int nextindex = 0;
+	int index = 0;  //临时变量的下标
+	char *code[1024]; //存放三地址码
+	int cindex = 0; //code的下标
+
 %}
 
 %union {
@@ -35,51 +32,44 @@
 %token GT LT ASSIGN
 %token LPAREN RPAREN LBRACE RBRACE SEM COMMA
 
-%left GT LT
-%left ADD SUB
-%left MUL DIV
-
 %type <a> P L S C E T F
-
 
 %%
 
-P: L     				{$$ = CreateNode("P->L",  $1, NULL); root = $$;}
+P: L     				{$$ = CreateNode("P->L",  $1, NULL); root = $$; place_twonode(&$$, $1->place);}
    | L P				{$$ = CreateNode("P->L P",$1, $2); root = $$;};
 	
 
-L: S SEM				{$$ = CreateNode("L->S;", $1, NULL);};
+L: S SEM				{$$ = CreateNode("L->S;", $1, NULL); place_twonode(&$$, $1->place);};
 
-
-S: ID ASSIGN E			{$$ = CreateId("S->ID=E",$1, $3); genrelop($$, $3, NULL,'=');}
+S: ID ASSIGN E			{$$ = CreateId("S->ID=E",$1, $3); gen_idnode($$3, $$1);}
    | IF C THEN S		{$$ = CreateNode("S->IF C THEN S", $2, $4);}
    | IF C THEN S ELSE S	{$$ = CreateifNode("S->IF C THEN S ELSE S", $2, $4, $6);}
    | WHILE C DO S		{$$ = CreateNode("S->WHILE C DO S",$2, $4);};
 
-C: E GT E				{$$ = CreateNode("C->E > E", $1, $3);}
-   | E LT E				{$$ = CreateNode("C->E < E", $1, $3);}
-   | E ASSIGN E			{$$ = CreateNode("C->E = E", $1, $3);};
+C: E GT E				{$$ = CreateNode("C->E > E", $1, $3); gen_comptrue($1,">", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);}
+   | E LT E				{$$ = CreateNode("C->E < E", $1, $3); gen_comptrue($1,"<", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);}
+   | E ASSIGN E			{$$ = CreateNode("C->E = E", $1, $3); gen_comptrue($1,"=", $2); $$.truelist = CreateList(cindex); gen_compfalse(); $$.falselist = CreateList(cindex);};
 
-E: E ADD T				{$$ = CreateNode("E->E+T", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2, '+');} 
-   | E SUB T			{$$ = CreateNode("E->E-T", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');}
-   | T					{$$ = CreateNode("E->T",$1, NULL);};
+E: E ADD T				{$$ = CreateNode("E->E+T", $1, $3); newtemp($$); gen($$, $1, '+', $3);} 
+   | E SUB T			{$$ = CreateNode("E->E-T", $1, $3); newtemp($$); gen($$, $1, '-', $3);}
+   | T					{$$ = CreateNode("E->T", $1, NULL); place_twonode(&$$, $1->place);};
 
-T: F					{$$ = CreateNode("T->F", $1, NULL);}
-   | T MUL F			{$$ = CreateNode("T->T * F", $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');}
-   | T DIV F			{$$ = CreateNode("T->T/F",   $1, $3); $$ = newtemp($$); genrelop($$, $1, $2,'-');};
+T: F					{$$ = CreateNode("T->F", $1, NULL);   place_twonode(&$$, $1->place);}
+   | T MUL F			{$$ = CreateNode("T->T * F", $1, $3); newtemp($$); gen($$, $1, '*', $3);}
+   | T DIV F			{$$ = CreateNode("T->T/F",   $1, $3); newtemp($$); gen($$, $1, '/', $3);};
 
-F: LPAREN E RPAREN		{$$ = CreateNode("F->(E)",$2, NULL);}
-   | ID					{$$ = CreateNodeId("F->ID",     $1);}
-   | INT8				{$$ = CreateNodeNum("F->INT8",  $1);}
-   | INT10				{$$ = CreateNodeNum("F->INT10", $1);}
-   | INT16				{$$ = CreateNodeNum("F->IND16", $1);}
-   | REAL8				{$$ = CreateReal("F->REAL8",  $1);}
-   | REAL10				{$$ = CreateReal("F->REAL10", $1);}
-   | REAL16				{$$ = CreateReal("F->REAL16", $1);};
+F: LPAREN E RPAREN		{$$ = CreateNode("F->(E)",$2, NULL); place_twonode(&$$, $1->place);}
+   | ID					{$$ = CreateNodeId("F->ID",     $1); placenum(&$$, $1->Id, 2);}
+   | INT8				{$$ = CreateNodeNum("F->INT8",  $1); placenum(&$$, $1->num, 1);}
+   | INT10				{$$ = CreateNodeNum("F->INT10", $1); placenum(&$$, $1->num, 1);}
+   | INT16				{$$ = CreateNodeNum("F->IND16", $1); placenum(&$$, $1->num, 1);}
+   | REAL8				{$$ = CreateReal("F->REAL8",  $1); placenum(&$$, $1->num, 1);}
+   | REAL10				{$$ = CreateReal("F->REAL10", $1); placenum(&$$, $1->num, 1);}
+   | REAL16				{$$ = CreateReal("F->REAL16", $1); placenum(&$$, $1->num, 1);};
 %%
 
-int main(int argc, const char *args[])
-{
+int main(int argc, const char *args[]){
 	extern FILE *yyin;
 
 	if(argc > 1 && (yyin = fopen(args[1], "r")) == NULL) {
@@ -101,48 +91,59 @@ void yyerror(char *s)
 
 }
 
-//create temporary variable
-struct AstNode* newtemp(struct AstNode* node)
+//num及id型创建place
+void placenum(AstNode *node, char *str, int type)
 {
-	count++;
-	node->tempcount = count;
-	node->type = 3;
-	return node;
+	node->type = type;
+	strcpy(node->place, str);
 }
 
-//create the name of tempporary variable
-void newplace(struct AstNode *node)
+//E = T
+void place_twonode(AstNode *node, char *str)
 {
-	switch(node->type){
-		case 1:
-			sprintf(3AC, "%s", node->Id);
-			break;
-		case 2:
-			sprintf(3AC, "%s", node->num);
-			break;
-		case 3:
-			sprintf(3AC, "%s", node->tempindex);
-			break;
-	}
+	strcpy(node->place, str);
 }
 
-void genrelop(struct AstNode* result, struct AstNode* arg1, struct AstNode* arg2, char op)
+//临时变量
+void newtemp(AstNode *node)
 {
-	if(op == "="){
-		newplace(arg1);
-	else{
-		newplace(arg1);
-		sprintf(3AC, "%c", op);
-		newplace(arg2);
-	}		
+	sprintf(node->place, "t%d", cnt);
+	cnt++;
 }
 
-//
-void PrintCode(FILE* f)
+//+、-、*、/
+void gen(AstNode *node, AstNode *arg1, char *op, AstNode *arg2)
 {
-	fprintf(f,"\n");
-	int i = 0;
-	for(i = 0; i < nextindex; i++){
-		fprintf(f,"%s\n", codestr[i]);
-	}
+	sprintf(temp, "%s %s %s", arg1->place, op, arg2->place);
+	strcpy(code[cindex], temp);
+	cindex++;
+}
+
+//逻辑判断里的<、>、=
+void gen_comptrue(AstNode *arg1, char *op, AstNode *arg2)
+{
+	sprintf(temp, "if %s %s %s goto", arg1->place, op, arg2->place);
+	strcpy(code[cindex], temp);
+	cindex++;
+}
+
+void gen_compfalse()
+{
+	sprintf(temp, "goto");
+	strcpy(code[cindex], temp);
+	cindex++;
+}
+
+//id.place= E.place
+void gen_idnode(AstNode* node, AstNode* nodeid)
+{
+	sprintf(temp, "%s := %s", nodeid->place, node->place);
+	strcpy(code[cindex], temp);
+	cindex++;
+}
+
+
+void backpatch(struct ListNode* list, int index)
+{
+	
 }

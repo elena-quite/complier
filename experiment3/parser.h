@@ -9,10 +9,10 @@ struct AstNode{
 	struct AstNode *r;
 	struct AstNode *c;
 
-	int tempindex;
+	char place[20];
+	int type;		//存储的类型，1表示数字，2表示id，3表示临时变量
 	int index;
-	char relop;
-	int type;
+
 
 	struct ListNode *truelist;
 	struct ListNode *falselist;
