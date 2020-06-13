@@ -1,166 +1,211 @@
-%option noyywrap yylineno
+%option noyywrap
 %{
-#include<string.h>
-#include<stdio.h>
-#include<stdlib.h>
-#include <math.h>
-#include "parser.tab.h"
+	#include<stdio.h>
+	#include<stdlib.h>
+	#include"f2.tab.h"
+
 %}
+INT_DEX ([1-9][0-9]*|[0])
+INT_HEX ([0][Xx][0-9a-f][0-9a-f]*)
+INT_OCT ([0][0-7][0-7]*)
+FLOAT_DEX (([1-9][0-9]*|[0])[.][0-9][0-9]*)
+FLOAT_HEX ([0][Xx][0-9a-f][0-9a-f]*[.][0-9a-f][0-9a-f]*)
+FLOAT_OCT ([0][0-7][0-7]*[.][0-7][0-7]*)
+SEMI [;]
+COMMA [,]
 
-INT10  (0|([1-9][0-9]*))
-REAL10 (0|([1-9][0-9]*)\.[0-9]+)
-
-INT8   (0[0-7]+)
-REAL8  (0[0-7]+\.[0-7]+)
-
-INT16  (0x[a-f0-9][a-f0-9]*)
-REAL16 (0x[a-f0-9][a-f0-9]*\.[a-f0-9]+)
-
+ASSIGNOP [=]
+GREATER_THAN [>]
+LESS_THAN [<]
+LE [>][=]
+GE [<][=]
+PLUS [+]
+MINUS [-]
+STAR [*]
+DIVI [/]
+AND [&][&]
+OR [|][|]
+NOT [!]
+TYPE int|float
+LP \(
+RP \)
+LB \[
+RB \]
+LC \{
+RC \}
+MAIN main
+STRUCT struct
+RETURN return
+IF if
+THEN then
+ELSE else 
+WHILE while
+DO do
+SPACE [ \n\t]
 ID ([a-zA-Z][a-zA-Z0-9]*?[_.][a-zA-Z0-9][a-zA-Z0-9]*?)|([a-zA-Z][a-zA-Z0-9]*?)
 
 %%
+{SEMI} {
+    return semi;
 
-"if" 	{return IF;}
+}
+{COMMA} {
+    return comma;
+}
+{ASSIGNOP} {
+    filloperator(&yylval, yytext);
+    return assignop;
+}
+{GREATER_THAN} {filloperator(&yylval, yytext); return greater_than;}
+{LESS_THAN} {filloperator(&yylval, yytext); return less_than;}
+{LE} {return LE;}
+{GE} {return GE;}
+{INT_DEX} {
+    filllexeme(&yylval, yytext);
+    return INT_DEX;
+}
+{INT_HEX} {
+    int i = 1;
+    int c ;
 
-"then" 	{return THEN;}
+    if(yytext[yyleng-1]>='0' && yytext[yyleng-1]<='9')
+	c = yytext[yyleng-1]-48;
+    else if(yytext[yyleng-1]>='a' && yytext[yyleng-1]<='f')
+	c = yytext[yyleng-1]-87;
 
-"else" 	{return ELSE;}
+    int h=16;
+    while(i<yyleng-2) {
 
-"while" {return WHILE;}
+	if(yytext[yyleng-1-i]>='0' && yytext[yyleng-1-i]<='9')
+		c=c+(yytext[yyleng-1-i]-48)*h;
+        else if(yytext[yyleng-1-i]>='a' && yytext[yyleng-1-i]<='f')
+		c=c+(yytext[yyleng-1-i]-87)*h;
 
-"do" 	{return DO;}
+        h=h*16;
+        i++;
+    }
+    char st[3];
+    sprintf(st,"%d",c);
 
+    filllexeme(&yylval, st);
+    return INT_HEX;
 
-"+"     {return ADD;}
-
-"-"     {return SUB;}
-
-"*"     {return MUL;}
-
-"/"     {return DIV;}
-
-">"     {return GT;}
-
-"<"     {return LT;}
-
-"="     {return ASSIGN;}
-
-"("     {return LPAREN;}
-
-")"     {return RPAREN;}
-
-"{"     {return LBRACE;}
-
-"}" 	{return RBRACE;}
-
-";"  	{return SEM;}
-
-"," 	{return COMMA;}
-
-" "     {}
-
-[ \t\n] {}
-
-
-
-{ID}     {yylval.n = strdup(yytext); return ID;}
-
-{INT10}  {yylval.d = atoi(yytext); return INT10;}
-
-{REAL10} {yylval.f = atof(yytext); return REAL10; }
-
-{INT8}   {
-	int chars = 0, sum = 0, step = 1, num; 
-	num = atoi(yytext); 
-	chars = strlen(yytext); 
-	for(int i = 0; i < chars; i++){ 
-		sum += step * (num % 10); 
-		step = step * 8; 
-		num = num/10;
-	}
-	yylval.d = sum; 
-	return INT8;
+}
+{INT_OCT} {
+    int i = 1;
+    int c = yytext[yyleng-1]-48;
+    int h=8;
+    while(i<yyleng-1) {
+	c=c+(yytext[yyleng-1-i]-48)*h;
+        h=h*8;
+        i++;
+    }
+    char st[3];
+    sprintf(st,"%d",c);
+    filllexeme(&yylval, st);
+    return INT_OCT;
 }
 
-{REAL8} {
-	int dot = 0, dec = 0, chars = 0, i = 0, nun; 
-	float num = 0, step = 1, sum = 0;
-	char *p; 
-	p = yytext;
-	for(i = 1;  ; i++) {
-		if(*p == '.'){
-			dot = i;
-			break;
-		} else{
-			p++;
-		}
-	}
-	num = atof(yytext);
-	chars = strlen(yytext);		  
-	dec = chars - i;
-	for(i = 0; i < dec; i++) {
-		num = num*10;
-		step = step/8;
-	}
-	nun = num;
-	for( i = 0; i < chars - 1; i++){ 
-		sum+=step*(nun%10);
-		step = step*8; 
-		nun = nun/10;
-	}
-	yylval.f = sum; 
-	return REAL8;
+{FLOAT_DEX} {
+    filllexeme(&yylval, yytext);
+    return FLOAT_DEX;
 }
+
+{FLOAT_HEX} {
+    int i = 1,j;
+    for(j=0;j<yyleng;j++){
+	if(yytext[j]=='.')
+		break;
+    }
+    float c;
+    if(yytext[j-1]>='0' && yytext[j-1]<='9')
+	c = yytext[j-1]-48;
+    else if(yytext[j-1]>='a' && yytext[j-1]<='f')
+	c = yytext[j-1]-87;
 	
-{INT16}   {
-	int chars = 0, num = 0, step = 1, i = 0;
-	char *p = yytext;
-	chars = strlen(yytext);
-	for(i = 0; i < chars - 1; i++)
-		p++;
-	for(i = 0; i < chars - 2; i++){
-		if(*p >= '0' && *p <= '9') {
-			num += step * (*p - '0');
-		} else if(*p >= 'a' && *p <= 'f') {
-			num += step * (*p - 'a' + 10);
-		}
-		step = step * 16;
-		p--; 
-	}
-	yylval.d = num; 
-	return INT16;
+    float h=16;
+    while(i<j-2) {
+	if(yytext[j-i-1]>='0' && yytext[j-i-1]<='9')
+		c=c+(yytext[j-i-1]-48)*h;
+        else if(yytext[j-i-1]>='a' && yytext[j-i-1]<='f')
+		c=c+(yytext[j-i-1]-87)*h;
+
+        h=h*16;
+        i++;
+    }
+
+    i=1;h=16;
+    while(i<yyleng-j) {
+	if(yytext[j+i]>='0' && yytext[j+i]<='9')
+		c=c+(yytext[j+i]-48)/h;
+        else if(yytext[j+i]>='a' && yytext[j+i]<='f')
+		c=c+(yytext[j+i]-87)/h;
+
+        h=h*16;
+        i++;
+    }
+    char st[256];
+    sprintf(st,"%f",c);
+    filllexeme(&yylval, st);
+    return FLOAT_HEX;
+}
+{FLOAT_OCT} {
+    int i = 1,j;
+    for(j=0;j<yyleng;j++){
+	if(yytext[j]=='.')
+		break;
+    }
+    float c = yytext[j-1]-48;
+    float h=8;
+    while(i<j-1) {
+	c=c+(yytext[j-1-i]-48)*h;
+        h=h*8;
+        i++;
+    }
+    i=1;h=8;
+    while(i<yyleng-j) {
+	c=c+(yytext[j+i]-48)/h;
+        h=h*8;
+        i++;
+    }
+    char st[256];
+    sprintf(st,"%f",c);
+    filllexeme(&yylval, st);
+
+    return FLOAT_OCT;
 }
 
-{REAL16} {
-	int chars = 0, i = 0, dec = 0;
-	float num = 0, step = 1;
-	char *p = yytext;
-	chars = strlen(yytext);
-	for(i = 0; i < chars - 1; i++){
-		if(*p == '.') dec = chars - i - 1;				
-		p++;
-	}
-	for(i = 0; i < dec; i++)
-		step = step / 16;
-	for(i = 0; i < chars - 2; i++) {
-		if(*p >= '0' && *p <= '9'){
-			num += step * (*p - '0');
-			step = step * 16;
-			p--; 			
-		} else if(*p >= 'a' && *p <= 'f'){
-			num += step * (*p - 'a' + 10);
-			step = step * 16;
-			p--; 
-		} else if(*p == '.'){
-			p--;
-		}
-	}
-	yylval.f = num; 
-	return REAL16;
-}
+{PLUS} {return plus;}
+{MINUS} {return minus;}
+{DIVI} {return divi;}
+{STAR} {return star;}
+
+{AND} {return and;}
+{OR} {return or;}
+{NOT} {return not;}
+
+{MAIN} {return MAIN;}
+{STRUCT} {return STRUCT;}
+{RETURN} {return RETURN;}
+{IF} {return IF;}
+{THEN} {return THEN;}
+{ELSE} {return ELSE;}
+{DO} {return DO;}
+{WHILE} {return WHILE;}
+
+{TYPE} {return TYPE;}
+
+{LP} {return LP;}
+{RP} {return RP;}
+{LB} {return LB;}
+{RB} {return RB;}
+{LC} {return LC;}
+{RC} {return RC;}
+
+{ID} {filllexeme(&yylval, yytext); return IDE;}
+
+{SPACE} |
+. {}
+
 %%
-
-
-
-
 

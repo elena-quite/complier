@@ -62,9 +62,9 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "parser.y" /* yacc.c:339  */
+#line 1 "f2.y" /* yacc.c:339  */
 
-	#include "parser.h"
+	#include "f3.h"
 	#include "ctype.h"
 	#define YYSTYPE node
 	#include "f2.tab.h"
@@ -73,7 +73,7 @@
 	extern int yylex();
 	codelist* list;
 
-#line 77 "parser.tab.c" /* yacc.c:339  */
+#line 77 "f2.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -92,9 +92,9 @@
 #endif
 
 /* In a future release of Bison, this section will be replaced
-   by #include "parser.tab.h".  */
-#ifndef YY_YY_PARSER_TAB_H_INCLUDED
-# define YY_YY_PARSER_TAB_H_INCLUDED
+   by #include "f2.tab.h".  */
+#ifndef YY_YY_F2_TAB_H_INCLUDED
+# define YY_YY_F2_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -159,11 +159,11 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_F2_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 167 "parser.tab.c" /* yacc.c:358  */
+#line 167 "f2.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -1263,78 +1263,78 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 22 "parser.y" /* yacc.c:1646  */
+#line 22 "f2.y" /* yacc.c:1646  */
     {
 	Gen(list,"END");
 }
-#line 1271 "parser.tab.c" /* yacc.c:1646  */
+#line 1271 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 25 "parser.y" /* yacc.c:1646  */
+#line 25 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr_fromnode(&(yyval), (yyvsp[0])); 
 }
-#line 1279 "parser.tab.c" /* yacc.c:1646  */
+#line 1279 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 28 "parser.y" /* yacc.c:1646  */
+#line 28 "f2.y" /* yacc.c:1646  */
     {
 	
 }
-#line 1287 "parser.tab.c" /* yacc.c:1646  */
+#line 1287 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 31 "parser.y" /* yacc.c:1646  */
+#line 31 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr_fromnode(&(yyval), (yyvsp[-1])); 
 }
-#line 1295 "parser.tab.c" /* yacc.c:1646  */
+#line 1295 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 34 "parser.y" /* yacc.c:1646  */
+#line 34 "f2.y" /* yacc.c:1646  */
     {
 	(yyval).instr = ((yyvsp[0]).instr==-1)?nextinstr(list):(yyvsp[0]).instr;
 	copyaddr(&(yyvsp[-2]), (yyvsp[-2]).lexeme); 
 	gen_assignment(list, (yyvsp[-2]), (yyvsp[0])); 
 }
-#line 1305 "parser.tab.c" /* yacc.c:1646  */
+#line 1305 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 39 "parser.y" /* yacc.c:1646  */
+#line 39 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	backpatch(list, (yyvsp[-2]).truelist, (yyvsp[0]).instr);
 	backpatch(list, (yyvsp[-2]).falselist, nextinstr(list));
 }
-#line 1315 "parser.tab.c" /* yacc.c:1646  */
+#line 1315 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 44 "parser.y" /* yacc.c:1646  */
+#line 44 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	gen_goto(list, (yyvsp[-2]).instr);
 	backpatch(list, (yyvsp[-2]).truelist, (yyvsp[0]).instr);
 	backpatch(list, (yyvsp[-2]).falselist, nextinstr(list));
 }
-#line 1326 "parser.tab.c" /* yacc.c:1646  */
+#line 1326 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 49 "parser.y" /* yacc.c:1646  */
+#line 49 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr_fromnode(&(yyval), (yyvsp[-1])); 
 }
-#line 1334 "parser.tab.c" /* yacc.c:1646  */
+#line 1334 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 52 "parser.y" /* yacc.c:1646  */
+#line 52 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	(yyval).truelist = new_instrlist(nextinstr(list));
@@ -1342,11 +1342,11 @@ yyreduce:
 	gen_if(list, (yyvsp[-2]), (yyvsp[-1]).oper, (yyvsp[0]));
 	gen_goto_blank(list); 
 }
-#line 1346 "parser.tab.c" /* yacc.c:1646  */
+#line 1346 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 59 "parser.y" /* yacc.c:1646  */
+#line 59 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	(yyval).truelist = new_instrlist(nextinstr(list));
@@ -1354,11 +1354,11 @@ yyreduce:
 	gen_if(list, (yyvsp[-2]), (yyvsp[-1]).oper, (yyvsp[0]));
 	gen_goto_blank(list); 
 }
-#line 1358 "parser.tab.c" /* yacc.c:1646  */
+#line 1358 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 66 "parser.y" /* yacc.c:1646  */
+#line 66 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	(yyval).truelist = new_instrlist(nextinstr(list));
@@ -1366,134 +1366,134 @@ yyreduce:
 	gen_if(list, (yyvsp[-2]), (yyvsp[-1]).oper, (yyvsp[0]));
 	gen_goto_blank(list); 
 }
-#line 1370 "parser.tab.c" /* yacc.c:1646  */
+#line 1370 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 73 "parser.y" /* yacc.c:1646  */
+#line 73 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	new_temp(&(yyval), get_temp_index(list)); 
 	gen_3addr(list, (yyval), (yyvsp[-2]), "+", (yyvsp[0]));
 }
-#line 1380 "parser.tab.c" /* yacc.c:1646  */
+#line 1380 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 78 "parser.y" /* yacc.c:1646  */
+#line 78 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	new_temp(&(yyval), get_temp_index(list)); 
 	gen_3addr(list, (yyval), (yyvsp[-2]), "-", (yyvsp[0]));
 }
-#line 1390 "parser.tab.c" /* yacc.c:1646  */
+#line 1390 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 83 "parser.y" /* yacc.c:1646  */
+#line 83 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr_fromnode(&(yyval), (yyvsp[0]));
 	(yyval).instr = (yyvsp[0]).instr;
 }
-#line 1399 "parser.tab.c" /* yacc.c:1646  */
+#line 1399 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 87 "parser.y" /* yacc.c:1646  */
+#line 87 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr_fromnode(&(yyval), (yyvsp[0]));
 	(yyval).instr = (yyvsp[0]).instr;
 }
-#line 1408 "parser.tab.c" /* yacc.c:1646  */
+#line 1408 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 91 "parser.y" /* yacc.c:1646  */
+#line 91 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	new_temp(&(yyval), get_temp_index(list)); 
 	gen_3addr(list, (yyval), (yyvsp[-2]), "*", (yyvsp[0]));
 }
-#line 1418 "parser.tab.c" /* yacc.c:1646  */
+#line 1418 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 96 "parser.y" /* yacc.c:1646  */
+#line 96 "f2.y" /* yacc.c:1646  */
     {
 	initInstr(&(yyval),&(yyvsp[-2]),&(yyvsp[0]),nextinstr(list));
 	new_temp(&(yyval), get_temp_index(list)); 
 	gen_3addr(list, (yyval), (yyvsp[-2]), "/", (yyvsp[0]));
 }
-#line 1428 "parser.tab.c" /* yacc.c:1646  */
+#line 1428 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 101 "parser.y" /* yacc.c:1646  */
+#line 101 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1436 "parser.tab.c" /* yacc.c:1646  */
+#line 1436 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 104 "parser.y" /* yacc.c:1646  */
+#line 104 "f2.y" /* yacc.c:1646  */
     {
 	(yyval).instr = (yyvsp[-1]).instr;
 	copyaddr_fromnode(&(yyval), (yyvsp[-1])); 
 }
-#line 1445 "parser.tab.c" /* yacc.c:1646  */
+#line 1445 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 108 "parser.y" /* yacc.c:1646  */
+#line 108 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1453 "parser.tab.c" /* yacc.c:1646  */
+#line 1453 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 111 "parser.y" /* yacc.c:1646  */
+#line 111 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1461 "parser.tab.c" /* yacc.c:1646  */
+#line 1461 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 114 "parser.y" /* yacc.c:1646  */
+#line 114 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1469 "parser.tab.c" /* yacc.c:1646  */
+#line 1469 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 117 "parser.y" /* yacc.c:1646  */
+#line 117 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1477 "parser.tab.c" /* yacc.c:1646  */
+#line 1477 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 120 "parser.y" /* yacc.c:1646  */
+#line 120 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1485 "parser.tab.c" /* yacc.c:1646  */
+#line 1485 "f2.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 123 "parser.y" /* yacc.c:1646  */
+#line 123 "f2.y" /* yacc.c:1646  */
     {
 	copyaddr(&(yyval), (yyvsp[0]).lexeme);
 }
-#line 1493 "parser.tab.c" /* yacc.c:1646  */
+#line 1493 "f2.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1497 "parser.tab.c" /* yacc.c:1646  */
+#line 1497 "f2.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1721,7 +1721,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 126 "parser.y" /* yacc.c:1906  */
+#line 126 "f2.y" /* yacc.c:1906  */
 
 int yyerror(char* msg)
 {

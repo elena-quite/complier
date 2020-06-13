@@ -1,0 +1,51 @@
+P->L P                  
+L->S;                   
+S->WHILE C DO S              
+C->E > E                
+E->T                    
+T->F                    
+F->(E)                  
+E->E+T                  
+E->T                    
+T->F                    
+F->ID                a3 
+T->F                    
+F->INT10             15               
+E->T                    
+T->F                    
+F->IND16             10               
+S->IF C THEN S              
+C->E = E                
+E->T                    
+T->F                    
+F->ID                x2 
+E->T                    
+T->F                    
+F->INT8               7               
+S->WHILE C DO S              
+C->E < E                
+E->T                    
+T->F                    
+F->ID                 y 
+E->T                    
+T->F                    
+F->ID                 z 
+S->ID=E               y 
+E->T                    
+T->T/F                  
+T->T * F                
+T->F                    
+F->ID                 x 
+F->ID                 y 
+F->ID                 z 
+P->L                    
+L->S;                   
+S->ID=E               c 
+E->E+T                  
+E->T                    
+T->T * F                
+T->F                    
+F->ID                 b 
+F->ID                 c 
+T->F                    
+F->ID                 d 

@@ -1,0 +1,16 @@
+    0:  t0 = a3 + 15.1
+    1:  if t0 > 10 goto 3
+    2:  goto 12
+    3:  if x2 = 7 goto 5
+    4:  goto 11
+    5:  if y < z goto 7
+    6:  goto 11
+    7:  t1 = x * y
+    8:  t2 = t1 / z
+    9:  y =  t2
+   10:  goto 5
+   11:  goto 0
+   12:  t3 = b * c
+   13:  t4 = t3 + d
+   14:  c =  t4
+   15:  END
