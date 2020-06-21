@@ -1,7 +1,7 @@
 # complier
 
 bjut-complier
-成员：王双，朴然，敖冬梅
+
 
 test1
 
@@ -12,3 +12,7 @@ test1
 test2
 `make`
 `./task2`
+
+test3
+make
+./task3
