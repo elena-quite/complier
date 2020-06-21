@@ -10,9 +10,9 @@ test1
 `./a.out + filename`
 
 test2
-`make`
-`./task2`
+ `make`
+ `./task2`
 
 test3
-make
-./task3
+ `make`
+ `./task3`
